@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金庸武侠: 决战江湖</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div class="hud-top">
+            <div class="bar-container">
+                <div class="bar-label">气血</div>
+                <div class="bar-bg">
+                    <div id="hp-bar" class="bar-fill hp-fill" style="width: 100%;"></div>
+                </div>
+                <div id="hp-text">100/100</div>
+            </div>
+            <div class="bar-container">
+                <div class="bar-label">修为</div>
+                <div class="bar-bg">
+                    <div id="xp-bar" class="bar-fill xp-fill" style="width: 0%;"></div>
+                </div>
+                <div id="level-text">境界 1</div>
+            </div>
+        </div>
+        <div class="hud-stats">
+            <div>时间: <span id="time-text">00:00</span></div>
+            <div>击杀: <span id="kill-text">0</span></div>
+            <div>银两: <span id="coin-text">0</span></div>
+        </div>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="level-up-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>境界突破!</h2>
+            <p>请选择一项武功秘籍:</p>
+            <div id="upgrade-options" class="upgrade-container">
+                <!-- Upgrades will be injected here via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="game-over-title">胜败乃兵家常事</h2>
+            <p>大侠坚持了 <span id="final-time">00:00</span></p>
+            <p>击败敌人: <span id="final-kills">0</span></p>
+            <button id="restart-btn" class="btn">重出江湖</button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
