@@ -145,51 +145,54 @@ export const Assets = {
     },
 
     createPlayerSprite() {
-        // High Quality Wuxia Swordsman SVG
+        // New animated player sprite
         const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-            <defs>
-                <linearGradient id="robeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#ecf0f1;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#bdc3c7;stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
-                </linearGradient>
-                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
-                    <feOffset dx="1" dy="1" result="offsetblur"/>
-                    <feComponentTransfer>
-                        <feFuncA type="linear" slope="0.3"/>
-                    </feComponentTransfer>
-                    <feMerge> 
-                        <feMergeNode in="offsetblur"/>
-                        <feMergeNode in="SourceGraphic"/> 
-                    </feMerge>
-                </filter>
-            </defs>
-            <g filter="url(#shadow)">
-                <!-- Flowing Robes -->
-                <path d="M16 58 Q 32 64 48 58 L 52 40 Q 56 20 32 18 Q 8 20 12 40 Z" fill="url(#robeGrad)" stroke="#95a5a6" stroke-width="0.5"/>
-                <!-- Outer Vest -->
-                <path d="M20 58 L 24 35 L 32 20 L 40 35 L 44 58 L 32 60 Z" fill="url(#blueGrad)"/>
-                <!-- Belt -->
-                <rect x="22" y="38" width="20" height="4" fill="#2c3e50" rx="1"/>
-                <circle cx="32" cy="40" r="3" fill="#f1c40f" stroke="#e67e22" stroke-width="1"/>
-                <!-- Head -->
-                <circle cx="32" cy="18" r="9" fill="#f1c40f"/>
-                <!-- Hair -->
-                <path d="M22 14 Q 32 8 42 14 L 42 18 Q 32 24 22 18 Z" fill="#2c3e50"/>
-                <circle cx="32" cy="10" r="4" fill="#2c3e50"/> <!-- Topknot -->
-                <!-- Sword on Back -->
-                <path d="M36 20 L 50 40" stroke="#bdc3c7" stroke-width="3" stroke-linecap="round"/>
-                <path d="M48 38 L 52 42" stroke="#bdc3c7" stroke-width="3"/> <!-- Hilt -->
-                <!-- Hands -->
-                <circle cx="18" cy="35" r="3" fill="#f1c40f"/>
-                <circle cx="46" cy="35" r="3" fill="#f1c40f"/>
-            </g>
-        </svg>
+        <svg width="64" height="64" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none"> 
+           <style> 
+             @keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1px); } } 
+             @keyframes flutter-hair { 0%, 100% { transform: rotate(0deg) skewX(0deg); } 25% { transform: rotate(5deg) skewX(-5deg); } 75% { transform: rotate(-2deg) skewX(2deg); } } 
+             @keyframes flutter-sash { 0%, 100% { transform: rotate(0deg) scaleX(1); } 50% { transform: rotate(-5deg) scaleX(0.95); } } 
+             @keyframes arm-sway { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(0.5px); } } 
+             .anim-body { animation: breathe 2s ease-in-out infinite; } 
+             .anim-ribbon-top { transform-origin: 16px 6px; animation: flutter-hair 1.5s ease-in-out infinite; } 
+             .anim-sash { transform-origin: 16px 19px; animation: flutter-sash 2s ease-in-out infinite reverse; } 
+             .anim-arm-front { animation: arm-sway 2s ease-in-out infinite 0.5s; } 
+             .anim-arm-back { animation: arm-sway 2s ease-in-out infinite; } 
+           </style> 
+           <g transform="translate(0, 1)"> 
+             <g class="anim-ribbon-top"> 
+               <path d="M18 6 H22 V7 H23 V8 H22 V9 H21 V8 H19 V7 H18 Z" fill="#D32F2F"/>  
+             </g> 
+             <g class="anim-body"> 
+               <rect x="11" y="21" width="4" height="6" fill="#212121"/> 
+               <rect x="10" y="26" width="3" height="2" fill="#111"/> 
+               <g class="anim-arm-back"> 
+                 <rect x="9" y="14" width="3" height="4" fill="#212121"/> 
+                 <rect x="8" y="16" width="2" height="2" fill="#FFCCB0"/> 
+               </g> 
+               <rect x="12" y="13" width="8" height="9" fill="#263238"/> 
+               <path d="M14 13 L16 16 L18 13" stroke="#D32F2F" stroke-width="1"/> 
+               <rect x="15" y="14" width="2" height="2" fill="#FFCCB0"/> 
+               <rect x="12" y="19" width="8" height="2" fill="#D32F2F"/> 
+               <rect x="13" y="19" width="2" height="2" fill="#B71C1C"/> 
+               <g class="anim-sash"> 
+                 <path d="M15 20 H18 V22 H19 V25 H18 V27 H16 V24 H15 Z" fill="#D32F2F"/> 
+               </g> 
+               <path d="M17 21 H21 V24 H22 V27 H19 V24 H17 Z" fill="#111"/>  
+               <rect x="20" y="27" width="4" height="2" fill="#000"/> 
+               <g class="anim-arm-front"> 
+                 <path d="M19 14 H23 V16 H24 V17 H22 V16 H19 Z" fill="#263238"/> 
+                 <rect x="24" y="16" width="2" height="2" fill="#FFCCB0"/> 
+               </g> 
+               <rect x="13" y="8" width="6" height="5" fill="#FFCCB0"/> 
+               <path d="M13 7 H19 V8 H20 V11 H19 V12 H18 V13 H14 V12 H13 V11 H12 V8 H13 Z" fill="#1A1A1A"/> 
+               <rect x="13" y="7" width="6" height="2" fill="#1A1A1A"/> 
+               <rect x="14" y="5" width="4" height="2" fill="#1A1A1A"/> 
+               <rect x="15" y="6" width="2" height="1" fill="#D32F2F"/> 
+               <rect x="17" y="9" width="1" height="1" fill="#000" opacity="0.6"/> 
+             </g> 
+           </g> 
+         </svg>
         `;
         return this.svgToImage(svg, 64, 64);
     },
