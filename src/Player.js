@@ -140,4 +140,9 @@ export class Player {
         this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
         this.game.triggerLevelUp();
     }
+
+    upgradeWeapon(type) {
+        const w = this.weapons.find(w => w.type === type);
+        if (w) w.level++;
+    }
 }

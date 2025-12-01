@@ -102,6 +102,15 @@ export class Projectile {
         } else if (type === 'evil_warding') {
              this.pierce = 3;
              this.radius = 6;
+        } else if (type === 'blood_blade') {
+             this.pierce = 999; // Pass through
+             this.radius = 20;
+             this.duration = 1000;
+        } else if (type === 'yang_spear' || type === 'yang_spear_evolved') {
+             this.radius = 5;
+        } else if (type === 'golden_wheel' || type === 'golden_wheel_evolved') {
+             this.pierce = 999;
+             this.radius = 15;
         } else {
             this.pierce = 1;
         }
@@ -127,6 +136,8 @@ export class Projectile {
             this.updateSpinFollow(deltaTime);
         } else if (this.behavior === 'expand') {
             this.updateExpand(deltaTime);
+        } else if (this.behavior === 'boomerang') {
+            this.updateBoomerang(deltaTime);
         } else {
             this.updateStraight(deltaTime);
         }
@@ -155,6 +166,39 @@ export class Projectile {
         this.y = this.game.player.y;
         this.scale += this.speed * deltaTime * 0.002;
         this.radius = this.baseRadius * this.scale * 4; // Visual scale vs Hitbox scale
+    }
+
+    updateBoomerang(deltaTime) {
+        const progress = this.timer / this.duration;
+        
+        // Go out for 40% of time
+        if (progress < 0.4) {
+            // Decelerate
+            const speedFactor = 1 - (progress / 0.4);
+            this.x += this.vx * speedFactor;
+            this.y += this.vy * speedFactor;
+        } else {
+            // Return to player
+            const dx = this.game.player.x - this.x;
+            const dy = this.game.player.y - this.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            // Catch check
+            if (dist < 20) {
+                this.markedForDeletion = true;
+                return;
+            }
+
+            const speed = this.speed * 1.5; // Faster return
+            const moveX = (dx / dist) * speed;
+            const moveY = (dy / dist) * speed;
+            
+            this.x += moveX;
+            this.y += moveY;
+        }
+
+        // Rotate
+        this.angle += 0.2;
     }
 
     updateOrbit(deltaTime) {

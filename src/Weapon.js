@@ -70,6 +70,18 @@ export class Weapon {
             this.interval = 1000;
             this.damage = 12;
             this.range = 400;
+        } else if (type === 'blood_blade') {
+            this.interval = 1500;
+            this.damage = 25;
+            this.range = 200; // Short range
+        } else if (type === 'yang_spear') {
+            this.interval = 1200;
+            this.damage = 18;
+            this.range = 600; // Long range
+        } else if (type === 'golden_wheel') {
+            this.interval = 2000;
+            this.damage = 20;
+            this.range = 400; // Medium range
         }
     }
 
@@ -123,11 +135,17 @@ export class Weapon {
             this.fireFlyingDagger();
         } else if (this.type === 'huashan') {
             this.fireHuashan();
+        } else if (this.type === 'blood_blade') {
+            this.fireBloodBlade();
+        } else if (this.type === 'yang_spear') {
+            this.fireYangSpear();
+        } else if (this.type === 'golden_wheel') {
+            this.fireGoldenWheel();
         }
     }
     
     fireDagger() {
-        this.spawnCastEffect('flash');
+        this.spawnCastEffect('snake_flash');
         // Golden Snake Sword - Piercing
         // Check for evolution
         const snakeTech = this.game.player.passives ? this.game.player.passives.snakeTech : 0;
@@ -199,6 +217,7 @@ export class Weapon {
     }
 
     fireTaiji(index) {
+        this.spawnCastEffect('taiji_flash');
         // Orbiting Taiji
         const taijiMantra = this.game.player.passives ? this.game.player.passives.taijiMantra : 0;
         const isEvolved = this.level >= 5 && taijiMantra >= 1;
@@ -238,7 +257,7 @@ export class Weapon {
     }
 
     fireDugu() {
-        this.spawnCastEffect('sword');
+        this.spawnCastEffect('spirit_flash');
         // Dugu Nine Swords - Homing
         const swordIntent = this.game.player.passives ? this.game.player.passives.swordIntent : 0;
         const isEvolved = this.level >= 5 && swordIntent >= 1;
@@ -280,7 +299,7 @@ export class Weapon {
     }
 
     fireWand() {
-        this.spawnCastEffect('flash');
+        this.spawnCastEffect('six_pulse_flash');
         // Six Pulse Divine Sword
         const internalForce = this.game.player.passives ? this.game.player.passives.internalForce : 0;
         const isEvolved = this.level >= 5 && internalForce >= 1;
@@ -339,6 +358,7 @@ export class Weapon {
     }
     
     fireAura() {
+        this.spawnCastEffect('aura_pulse');
         // Damage all enemies in radius
         const yangEnergy = this.game.player.passives ? this.game.player.passives.yangEnergy : 0;
         const isEvolved = this.level >= 5 && yangEnergy >= 1;
@@ -365,7 +385,7 @@ export class Weapon {
     }
 
     firePalm() {
-        this.spawnCastEffect('fire');
+        this.spawnCastEffect('palm_flash');
         // Dragon Palm
         const muscleTendon = this.game.player.passives ? this.game.player.passives.muscleTendon : 0;
         const isEvolved = this.level >= 5 && muscleTendon >= 1;
@@ -775,7 +795,7 @@ export class Weapon {
     }
 
     fireFlyingDagger() {
-        this.spawnCastEffect('flash');
+        this.spawnCastEffect('dagger_flash');
         // Little Li's Flying Dagger
         const truth = this.game.player.passives ? this.game.player.passives.truth : 0;
         const isEvolved = this.level >= 5 && truth >= 1;
@@ -833,7 +853,7 @@ export class Weapon {
     }
 
     fireHuashan() {
-        this.spawnCastEffect('sword');
+        this.spawnCastEffect('swift_flash');
         // Huashan Sword Art
         const ghost = this.game.player.passives ? this.game.player.passives.ghost : 0;
         const isEvolved = this.level >= 5 && ghost >= 1;
@@ -896,8 +916,165 @@ export class Weapon {
         }
     }
 
+    fireBloodBlade() {
+        this.spawnCastEffect('blood_slash');
+        const isEvolved = this.level >= 8;
+        let damage = this.damage;
+        let speed = 5;
+        let count = 1;
+        let type = 'blood_blade';
+        let size = 1.0;
+
+        if (isEvolved) {
+            damage = this.damage * 2.5;
+            size = 1.5;
+            count = 3;
+        } else {
+            damage = this.damage * (1 + (this.level-1) * 0.2);
+            if (this.level >= 4) count = 2;
+        }
+
+        let targetAngle = 0;
+        let nearest = null;
+        let minDist = Infinity;
+        
+        this.game.enemies.forEach(e => {
+            const dist = Utils.getDistance(this.game.player.x, this.game.player.y, e.x, e.y);
+            if (dist < minDist && dist < this.range) {
+                minDist = dist;
+                nearest = e;
+            }
+        });
+
+        if (nearest) {
+            targetAngle = Math.atan2(nearest.y - this.game.player.y, nearest.x - this.game.player.x);
+        } else if (this.game.player.lastMoveX !== 0 || this.game.player.lastMoveY !== 0) {
+            targetAngle = Math.atan2(this.game.player.lastMoveY, this.game.player.lastMoveX);
+        } else {
+            targetAngle = -Math.PI/2;
+        }
+
+        for(let i=0; i<count; i++) {
+            const angle = targetAngle + (i - (count-1)/2) * 0.3;
+            const p = new Projectile(
+                this.game,
+                this.game.player.x,
+                this.game.player.y,
+                angle,
+                speed,
+                damage,
+                1000,
+                type,
+                'straight'
+            );
+            p.scale = size;
+            p.radius = 20 * size;
+            this.game.projectiles.push(p);
+        }
+    }
+
+    fireYangSpear() {
+        this.spawnCastEffect('spear_thrust');
+        const isEvolved = this.level >= 8;
+        let damage = this.damage;
+        let speed = 12;
+        let type = 'yang_spear';
+        let pierce = 3;
+        
+        if (isEvolved) {
+            damage = this.damage * 2;
+            pierce = 10;
+            type = 'yang_spear_evolved';
+        } else {
+            damage = this.damage * (1 + (this.level-1) * 0.2);
+            pierce = 3 + Math.floor(this.level / 2);
+        }
+
+        let nearest = null;
+        let minDist = Infinity;
+        this.game.enemies.forEach(e => {
+            const dist = Utils.getDistance(this.game.player.x, this.game.player.y, e.x, e.y);
+            if (dist < minDist && dist < this.range) {
+                minDist = dist;
+                nearest = e;
+            }
+        });
+
+        const angle = nearest 
+            ? Math.atan2(nearest.y - this.game.player.y, nearest.x - this.game.player.x)
+            : (this.game.player.lastMoveX !== 0 || this.game.player.lastMoveY !== 0)
+                ? Math.atan2(this.game.player.lastMoveY, this.game.player.lastMoveX)
+                : Math.random() * Math.PI * 2;
+
+        const p = new Projectile(
+            this.game,
+            this.game.player.x,
+            this.game.player.y,
+            angle,
+            speed,
+            damage,
+            2000,
+            type,
+            'straight'
+        );
+        p.pierce = pierce;
+        this.game.projectiles.push(p);
+    }
+
+    fireGoldenWheel() {
+        this.spawnCastEffect('wheel_spin');
+        const isEvolved = this.level >= 8;
+        let damage = this.damage;
+        let speed = 8;
+        let count = 1;
+        let type = 'golden_wheel';
+        let duration = 3000;
+
+        if (isEvolved) {
+            damage = this.damage * 2;
+            count = 3;
+            type = 'golden_wheel_evolved';
+        } else {
+            damage = this.damage * (1 + (this.level-1) * 0.2);
+            if (this.level >= 4) count = 2;
+        }
+
+        let nearest = null;
+        let minDist = Infinity;
+        this.game.enemies.forEach(e => {
+            const dist = Utils.getDistance(this.game.player.x, this.game.player.y, e.x, e.y);
+            if (dist < minDist && dist < this.range) {
+                minDist = dist;
+                nearest = e;
+            }
+        });
+
+        const baseAngle = nearest 
+            ? Math.atan2(nearest.y - this.game.player.y, nearest.x - this.game.player.x)
+            : (this.game.player.lastMoveX !== 0 || this.game.player.lastMoveY !== 0)
+                ? Math.atan2(this.game.player.lastMoveY, this.game.player.lastMoveX)
+                : Math.random() * Math.PI * 2;
+
+        for(let i=0; i<count; i++) {
+            const angle = baseAngle + (i - (count-1)/2) * 0.5;
+            const p = new Projectile(
+                this.game,
+                this.game.player.x,
+                this.game.player.y,
+                angle,
+                speed,
+                damage,
+                duration,
+                type,
+                'boomerang'
+            );
+            p.pierce = 999;
+            this.game.projectiles.push(p);
+        }
+    }
+
     spawnCastEffect(type) {
-        if (type === 'fire') {
+        if (type === 'palm_flash') {
             for(let i=0; i<10; i++) {
                 this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'smoke', {
                     color: '#e74c3c',
@@ -906,6 +1083,81 @@ export class Weapon {
                     maxLife: 40,
                     vx: (Math.random() - 0.5) * 4,
                     vy: (Math.random() - 0.5) * 4
+                }));
+            }
+        } else if (type === 'aura_pulse') {
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: 'rgba(231, 76, 60, 0.3)',
+                    size: 80, // Matches initial aura radius roughly
+                    life: 10,
+                    maxLife: 10,
+                    vx: 0, vy: 0
+            }));
+        } else if (type === 'taiji_flash') {
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: '#ffffff',
+                    size: 15,
+                    life: 15,
+                    maxLife: 15,
+                    vx: 0, vy: 0
+            }));
+            for(let i=0; i<6; i++) {
+                 this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'trail', {
+                    color: i % 2 === 0 ? '#000000' : '#ffffff',
+                    size: 5,
+                    life: 30,
+                    maxLife: 30,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4
+                }));
+            }
+        } else if (type === 'six_pulse_flash') {
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: '#3498db',
+                    size: 20,
+                    life: 10,
+                    maxLife: 10,
+                    vx: 0, vy: 0
+            }));
+             for(let i=0; i<8; i++) {
+                 const angle = (Math.PI * 2 / 8) * i;
+                 this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'sparkle', {
+                    color: '#ecf0f1',
+                    size: 3,
+                    life: 20,
+                    maxLife: 20,
+                    vx: Math.cos(angle) * 6,
+                    vy: Math.sin(angle) * 6
+                }));
+             }
+        } else if (type === 'spirit_flash') {
+             for(let i=0; i<6; i++) {
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'trail', {
+                    color: '#8e44ad', // Purple
+                    size: 4,
+                    life: 25,
+                    maxLife: 25,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5
+                }));
+            }
+        } else if (type === 'dagger_flash') {
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: '#95a5a6',
+                    size: 15,
+                    life: 10,
+                    maxLife: 10,
+                    vx: 0, vy: 0
+            }));
+        } else if (type === 'swift_flash') {
+             for(let i=0; i<5; i++) {
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'smoke', {
+                    color: '#ecf0f1', // White wind
+                    size: 5,
+                    life: 20,
+                    maxLife: 20,
+                    vx: (Math.random() - 0.5) * 8, // Fast
+                    vy: (Math.random() - 0.5) * 8
                 }));
             }
         } else if (type === 'sword') {
@@ -928,6 +1180,25 @@ export class Weapon {
                     maxLife: 10,
                     vx: 0, vy: 0
             }));
+        } else if (type === 'snake_flash') {
+            // Golden/Green flash
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: '#f1c40f',
+                    size: 25,
+                    life: 15,
+                    maxLife: 15,
+                    vx: 0, vy: 0
+            }));
+             for(let i=0; i<5; i++) {
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'smoke', {
+                    color: '#2ecc71',
+                    size: 5,
+                    life: 25,
+                    maxLife: 25,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3
+                }));
+            }
         } else if (type === 'sound') {
              for(let i=0; i<3; i++) {
                  this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'note', {
@@ -938,7 +1209,7 @@ export class Weapon {
                     vx: (Math.random() - 0.5) * 4,
                     vy: (Math.random() - 0.5) * 4
                 }));
-             }
+            }
         } else if (type === 'claw') {
             // Nine Yin Bone Claw cast effect - Ghostly aura
             for(let i=0; i<8; i++) {
@@ -980,14 +1251,22 @@ export class Weapon {
                 }));
             }
         } else if (type === 'stone') {
-             for(let i=0; i<5; i++) {
-                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'smoke', {
+             // Finger Flick - concentrated force
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                    color: '#bdc3c7',
+                    size: 10,
+                    life: 10,
+                    maxLife: 10,
+                    vx: 0, vy: 0
+            }));
+             for(let i=0; i<3; i++) {
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'trail', {
                     color: '#95a5a6',
-                    size: 6,
-                    life: 25,
-                    maxLife: 25,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6
+                    size: 4,
+                    life: 20,
+                    maxLife: 20,
+                    vx: (Math.random() - 0.5) * 10, // Fast debris
+                    vy: (Math.random() - 0.5) * 10
                 }));
             }
         } else if (type === 'spin') {
@@ -1003,21 +1282,71 @@ export class Weapon {
                 }));
              }
         } else if (type === 'roar') {
-             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
-                    color: '#f1c40f',
-                    size: 30,
-                    life: 10,
-                    maxLife: 10,
-                    vx: 0, vy: 0
-            }));
-        } else if (type === 'star') {
-             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'sparkle', {
-                    color: '#f1c40f',
-                    size: 10,
+             // Lion's Roar - expanding shockwave
+             this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'shockwave', {
+                    color: 'rgba(241, 196, 15, 0.5)',
+                    size: 20,
                     life: 20,
                     maxLife: 20,
                     vx: 0, vy: 0
             }));
+            for(let i=0; i<8; i++) {
+                const angle = (Math.PI * 2 / 8) * i;
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'smoke', {
+                    color: '#f39c12',
+                    size: 8,
+                    life: 30,
+                    maxLife: 30,
+                    vx: Math.cos(angle) * 3,
+                    vy: Math.sin(angle) * 3
+                }));
+            }
+        } else if (type === 'star') {
+             // Seven Star - constellation flash
+             for(let i=0; i<7; i++) {
+                 this.game.particles.push(new Particle(this.game, this.game.player.x + (Math.random()-0.5)*40, this.game.player.y + (Math.random()-0.5)*40, 'sparkle', {
+                    color: '#f1c40f',
+                    size: 8,
+                    life: 25,
+                    maxLife: 25,
+                    vx: 0, vy: 0
+                }));
+             }
+        } else if (type === 'blood_slash') {
+            this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'explosion', {
+                color: '#c0392b',
+                size: 30,
+                life: 10,
+                maxLife: 10,
+                vx: 0, vy: 0
+            }));
+        } else if (type === 'spear_thrust') {
+             // Linear dash effect
+             const angle = this.game.player.lastMoveX !== 0 || this.game.player.lastMoveY !== 0
+                ? Math.atan2(this.game.player.lastMoveY, this.game.player.lastMoveX)
+                : -Math.PI/2;
+             for(let i=0; i<5; i++) {
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'trail', {
+                    color: '#ecf0f1',
+                    size: 5,
+                    life: 15,
+                    maxLife: 15,
+                    vx: Math.cos(angle) * 10 + (Math.random()-0.5)*2,
+                    vy: Math.sin(angle) * 10 + (Math.random()-0.5)*2
+                }));
+             }
+        } else if (type === 'wheel_spin') {
+            for(let i=0; i<8; i++) {
+                const a = (Math.PI * 2 / 8) * i;
+                this.game.particles.push(new Particle(this.game, this.game.player.x, this.game.player.y, 'sparkle', {
+                    color: '#f39c12',
+                    size: 5,
+                    life: 20,
+                    maxLife: 20,
+                    vx: Math.cos(a) * 5,
+                    vy: Math.sin(a) * 5
+                }));
+            }
         }
     }
 }

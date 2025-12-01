@@ -38,9 +38,80 @@ export const Assets = {
         this.images.projectile_desolate_flash = this.createDesolateFlashSprite();
         this.images.projectile_huashan = this.createHuashanSprite();
         this.images.projectile_evil_warding = this.createEvilWardingSprite();
+        this.images.projectile_blood_blade = this.createBloodBladeSprite();
+        this.images.projectile_yang_spear = this.createYangSpearSprite();
+        this.images.projectile_yang_spear_evolved = this.createYangSpearEvolvedSprite();
+        this.images.projectile_golden_wheel = this.createGoldenWheelSprite();
+        this.images.projectile_golden_wheel_evolved = this.createGoldenWheelEvolvedSprite();
         this.images.enemy_bullet = this.createEnemyBulletSprite();
         
         this.images.ground = this.createGroundTile();
+    },
+
+    createBloodBladeSprite() {
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+            <path d="M10,32 Q32,10 54,32 Q32,20 10,32 Z" fill="#c0392b" stroke="#e74c3c" stroke-width="2" />
+            <path d="M12,32 Q32,22 52,32" fill="none" stroke="#e74c3c" stroke-width="1" />
+        </svg>
+        `;
+        return this.svgToImage(svg, 64, 64);
+    },
+
+    createYangSpearSprite() {
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="16" viewBox="0 0 48 16">
+            <rect x="0" y="7" width="36" height="2" fill="#7f8c8d" />
+            <path d="M36,8 L48,8 L44,4 L36,8 Z" fill="#bdc3c7" /> <!-- Tip top -->
+            <path d="M36,8 L48,8 L44,12 L36,8 Z" fill="#95a5a6" /> <!-- Tip bottom -->
+            <circle cx="36" cy="8" r="3" fill="#c0392b" /> <!-- Tassel -->
+        </svg>
+        `;
+        return this.svgToImage(svg, 48, 16);
+    },
+
+    createYangSpearEvolvedSprite() {
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="20" viewBox="0 0 64 20">
+            <rect x="0" y="8" width="48" height="4" fill="#f1c40f" stroke="#e67e22" />
+            <path d="M48,10 L64,10 L56,2 L48,10 Z" fill="#f39c12" />
+            <path d="M48,10 L64,10 L56,18 L48,10 Z" fill="#d35400" />
+            <circle cx="48" cy="10" r="5" fill="#e74c3c" />
+            <path d="M40,10 Q30,0 20,10" stroke="#e74c3c" stroke-width="2" fill="none" />
+        </svg>
+        `;
+        return this.svgToImage(svg, 64, 20);
+    },
+
+    createGoldenWheelSprite() {
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="16" fill="none" stroke="#f1c40f" stroke-width="4" />
+            <path d="M24 8 L24 0 M24 40 L24 48 M8 24 L0 24 M40 24 L48 24" stroke="#f1c40f" stroke-width="4" />
+            <path d="M12 12 L6 6 M36 36 L42 42 M12 36 L6 42 M36 12 L42 6" stroke="#f1c40f" stroke-width="4" />
+            <circle cx="24" cy="24" r="8" fill="#f39c12" />
+        </svg>
+        `;
+        return this.svgToImage(svg, 48, 48);
+    },
+
+    createGoldenWheelEvolvedSprite() {
+        const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+            <defs>
+                <radialGradient id="goldGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#d35400;stop-opacity:1" />
+                </radialGradient>
+            </defs>
+            <circle cx="32" cy="32" r="20" fill="none" stroke="url(#goldGrad)" stroke-width="6" />
+            <path d="M32 6 L32 0 M32 58 L32 64 M6 32 L0 32 M58 32 L64 32" stroke="#e67e22" stroke-width="6" />
+            <path d="M14 14 L4 4 M50 50 L60 60 M14 50 L4 60 M50 14 L60 4" stroke="#e67e22" stroke-width="6" />
+            <circle cx="32" cy="32" r="12" fill="url(#goldGrad)" />
+            <circle cx="32" cy="32" r="4" fill="#c0392b" />
+        </svg>
+        `;
+        return this.svgToImage(svg, 64, 64);
     },
 
     createEnemyBulletSprite() {
