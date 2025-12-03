@@ -224,8 +224,16 @@ export class Game {
         else if (rand < 0.05) this.items.push(new Item(this, x, y - 10, 'coin', 10));
     }
 
-    triggerLevelUp() {
+    pauseGame() {
         this.isPaused = true;
+    }
+
+    resumeGame() {
+        this.isPaused = false;
+    }
+
+    triggerLevelUp() {
+        this.pauseGame();
         const modal = document.getElementById('level-up-modal');
         const optionsContainer = document.getElementById('upgrade-options');
         const modalTitle = modal.querySelector('h2'); // Assuming there's an h2
@@ -242,7 +250,7 @@ export class Game {
     }
 
     triggerChestReward() {
-        this.isPaused = true;
+        this.pauseGame();
         const modal = document.getElementById('level-up-modal');
         const optionsContainer = document.getElementById('upgrade-options');
         const modalTitle = modal.querySelector('h2');
@@ -306,7 +314,7 @@ export class Game {
             div.onclick = () => {
                 this.applyUpgrade(opt);
                 modal.classList.add('hidden');
-                this.isPaused = false;
+                this.resumeGame();
             };
             container.appendChild(div);
         });
